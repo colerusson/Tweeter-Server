@@ -25,6 +25,7 @@ public class FollowService {
         void handleException(Exception exception);
     }
 
+
     /**
      * Creates an instance.
      */
