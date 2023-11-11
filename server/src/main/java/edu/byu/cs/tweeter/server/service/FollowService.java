@@ -3,9 +3,13 @@ package edu.byu.cs.tweeter.server.service;
 import java.util.List;
 
 import edu.byu.cs.tweeter.model.domain.User;
+import edu.byu.cs.tweeter.model.net.request.FollowersCountRequest;
 import edu.byu.cs.tweeter.model.net.request.FollowersRequest;
+import edu.byu.cs.tweeter.model.net.request.FollowingCountRequest;
 import edu.byu.cs.tweeter.model.net.request.FollowingRequest;
+import edu.byu.cs.tweeter.model.net.response.FollowersCountResponse;
 import edu.byu.cs.tweeter.model.net.response.FollowersResponse;
+import edu.byu.cs.tweeter.model.net.response.FollowingCountResponse;
 import edu.byu.cs.tweeter.model.net.response.FollowingResponse;
 import edu.byu.cs.tweeter.server.dao.FollowDAO;
 import edu.byu.cs.tweeter.util.Pair;
@@ -44,6 +48,24 @@ public class FollowService {
 
         Pair<List<User>, Boolean> pair = getFollowingDAO().getFollowers(request.getFollowerAlias(), request.getLimit(), request.getLastFollowerAlias());
         return new FollowersResponse(pair.getFirst(), pair.getSecond());
+    }
+
+    public FollowingCountResponse getFollowingCount(FollowingCountRequest request) {
+        if(request.getUserAlias() == null) {
+            throw new RuntimeException("[Bad Request] Request needs to have a follower alias");
+        }
+
+        int count = 20;
+        return new FollowingCountResponse(count);
+    }
+
+    public FollowersCountResponse getFollowersCount(FollowersCountRequest request) {
+        if(request.getUserAlias() == null) {
+            throw new RuntimeException("[Bad Request] Request needs to have a follower alias");
+        }
+
+        int count = 20;
+        return new FollowersCountResponse(count);
     }
 
     /**
