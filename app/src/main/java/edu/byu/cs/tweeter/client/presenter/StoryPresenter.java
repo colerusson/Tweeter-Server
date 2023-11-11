@@ -12,6 +12,6 @@ public class StoryPresenter extends PagedPresenter<Status> {
 
     @Override
     protected int loadItems(User user) {
-        return 1;
+        return 3;
     }
 }

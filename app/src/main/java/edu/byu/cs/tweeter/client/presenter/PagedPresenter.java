@@ -40,10 +40,13 @@ public abstract class PagedPresenter<T> extends Presenter {
             view.setLoadingFooter(true);
             if (loadItems(user) == 1) {
                 StatusService statusService = getStatusService();
-                statusService.loadMoreItems(Cache.getInstance().getCurrUserAuthToken(), user, PAGE_SIZE, (Status) lastItem, new StatusServiceObserver());
+                statusService.loadMoreFeedItems(Cache.getInstance().getCurrUserAuthToken(), user, PAGE_SIZE, (Status) lastItem, new StatusServiceObserver());
             } else if (loadItems(user) == 2) {
                 FollowService followService = getFollowService();
                 followService.loadMoreFollowerItems(Cache.getInstance().getCurrUserAuthToken(), user, PAGE_SIZE, (User) lastItem, new FollowServiceObserver());
+            } else if (loadItems(user) == 3){
+                StatusService statusService = getStatusService();
+                statusService.loadMoreStoryItems(Cache.getInstance().getCurrUserAuthToken(), user, PAGE_SIZE, (Status) lastItem, new StatusServiceObserver());
             } else {
                 FollowService followService = getFollowService();
                 followService.loadMoreFolloweeItems(Cache.getInstance().getCurrUserAuthToken(), user, PAGE_SIZE, (User) lastItem, new FollowServiceObserver());
@@ -95,8 +98,10 @@ public abstract class PagedPresenter<T> extends Presenter {
             isLoading = false;
             view.setLoadingFooter(false);
             PagedPresenter.this.hasMorePages = hasMorePages;
-            lastItem = (items.size() > 0) ? (T) items.get(items.size() - 1) : null;
-            view.addMoreItems((List<T>) items);
+            if (items != null) {
+                lastItem = (items.size() > 0) ? (T) items.get(items.size() - 1) : null;
+                view.addMoreItems((List<T>) items);
+            }
         }
     }
 
@@ -118,8 +123,10 @@ public abstract class PagedPresenter<T> extends Presenter {
             isLoading = false;
             view.setLoadingFooter(false);
             PagedPresenter.this.hasMorePages = hasMorePages;
-            lastItem = (items.size() > 0) ? (T) items.get(items.size() - 1) : null;
-            view.addMoreItems((List<T>) items);
+            if (items != null) {
+                lastItem = (items.size() > 0) ? (T) items.get(items.size() - 1) : null;
+                view.addMoreItems((List<T>) items);
+            }
         }
     }
 }

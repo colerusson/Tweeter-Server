@@ -103,7 +103,7 @@ public class FollowersRequest {
      *
      * @param lastFollowerAlias the last follower.
      */
-    public void setLastFollowerAlias(String lastFolloweeAlias) {
-        this.lastFollowerAlias = lastFolloweeAlias;
+    public void setLastFollowerAlias(String lastFollowerAlias) {
+        this.lastFollowerAlias = lastFollowerAlias;
     }
 }
