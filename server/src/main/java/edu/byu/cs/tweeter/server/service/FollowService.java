@@ -3,7 +3,9 @@ package edu.byu.cs.tweeter.server.service;
 import java.util.List;
 
 import edu.byu.cs.tweeter.model.domain.User;
+import edu.byu.cs.tweeter.model.net.request.FollowersRequest;
 import edu.byu.cs.tweeter.model.net.request.FollowingRequest;
+import edu.byu.cs.tweeter.model.net.response.FollowersResponse;
 import edu.byu.cs.tweeter.model.net.response.FollowingResponse;
 import edu.byu.cs.tweeter.server.dao.FollowDAO;
 import edu.byu.cs.tweeter.util.Pair;
@@ -31,6 +33,17 @@ public class FollowService {
 
         Pair<List<User>, Boolean> pair = getFollowingDAO().getFollowees(request.getFollowerAlias(), request.getLimit(), request.getLastFolloweeAlias());
         return new FollowingResponse(pair.getFirst(), pair.getSecond());
+    }
+
+    public FollowersResponse getFollowers(FollowersRequest request) {
+        if(request.getFollowerAlias() == null) {
+            throw new RuntimeException("[Bad Request] Request needs to have a follower alias");
+        } else if(request.getLimit() <= 0) {
+            throw new RuntimeException("[Bad Request] Request needs to have a positive limit");
+        }
+
+        Pair<List<User>, Boolean> pair = getFollowingDAO().getFollowees(request.getFollowerAlias(), request.getLimit(), request.getLastFollowerAlias());
+        return new FollowersResponse(pair.getFirst(), pair.getSecond());
     }
 
     /**

@@ -62,6 +62,31 @@ public class FollowDAO {
         return new Pair<>(responseFollowees, hasMorePages);
     }
 
+    public Pair<List<User>, Boolean> getFollowers(String followerAlias, int limit, String lastFollowerAlias) {
+        // TODO: Generates dummy data. Replace with a real implementation.
+        assert limit > 0;
+        assert followerAlias != null;
+
+        List<User> allFollowers = getDummyFollowees();
+        List<User> responseFollowers = new ArrayList<>(limit);
+
+        boolean hasMorePages = false;
+
+        if(limit > 0) {
+            if (allFollowers != null) {
+                int followersIndex = getFolloweesStartingIndex(lastFollowerAlias, allFollowers);
+
+                for(int limitCounter = 0; followersIndex < allFollowers.size() && limitCounter < limit; followersIndex++, limitCounter++) {
+                    responseFollowers.add(allFollowers.get(followersIndex));
+                }
+
+                hasMorePages = followersIndex < allFollowers.size();
+            }
+        }
+
+        return new Pair<>(responseFollowers, hasMorePages);
+    }
+
     /**
      * Determines the index for the first followee in the specified 'allFollowees' list that should
      * be returned in the current request. This will be the index of the next followee after the
