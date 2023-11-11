@@ -18,7 +18,7 @@ public class FollowServiceTest {
     private User currentUser;
     private AuthToken currentAuthToken;
 
-    private FollowService followServiceSpy;
+    private FollowServiceDelete followServiceSpy;
     private FollowServiceObserver observer;
 
     private CountDownLatch countDownLatch;
@@ -32,7 +32,7 @@ public class FollowServiceTest {
         currentUser = new User("FirstName", "LastName", null);
         currentAuthToken = new AuthToken();
 
-        followServiceSpy = Mockito.spy(new FollowService());
+        followServiceSpy = Mockito.spy(new FollowServiceDelete());
 
         // Setup an observer for the FollowService
         observer = new FollowServiceObserver();
@@ -51,12 +51,12 @@ public class FollowServiceTest {
     }
 
     /**
-     * A {@link FollowService.GetFollowingObserver} implementation that can be used to get the values
-     * eventually returned by an asynchronous call on the {@link FollowService}. Counts down
+     * A {@link FollowServiceDelete.GetFollowingObserver} implementation that can be used to get the values
+     * eventually returned by an asynchronous call on the {@link FollowServiceDelete}. Counts down
      * on the countDownLatch so tests can wait for the background thread to call a method on the
      * observer.
      */
-    private class FollowServiceObserver implements FollowService.GetFollowingObserver {
+    private class FollowServiceObserver implements FollowServiceDelete.GetFollowingObserver {
 
         private boolean success;
         private String message;
@@ -119,7 +119,7 @@ public class FollowServiceTest {
     }
 
     /**
-     * Verify that for successful requests, the {@link FollowService#getFollowees}
+     * Verify that for successful requests, the {@link FollowServiceDelete#getFollowees}
      * asynchronous method eventually returns the same result as the {@link ServerFacade}.
      */
     @Test
@@ -136,7 +136,7 @@ public class FollowServiceTest {
     }
 
     /**
-     * Verify that for successful requests, the the {@link FollowService#getFollowees}
+     * Verify that for successful requests, the the {@link FollowServiceDelete#getFollowees}
      * method loads the profile image of each user included in the result.
      */
     @Test
@@ -149,7 +149,7 @@ public class FollowServiceTest {
     }
 
     /**
-     * Verify that for unsuccessful requests, the the {@link FollowService#getFollowees}
+     * Verify that for unsuccessful requests, the the {@link FollowServiceDelete#getFollowees}
      * method returns the same failure response as the server facade.
      */
     @Test

@@ -10,7 +10,6 @@ import org.mockito.stubbing.Answer;
 import java.util.Arrays;
 import java.util.List;
 
-import edu.byu.cs.tweeter.client.model.service.FollowService;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
@@ -27,13 +26,13 @@ public class FollowingPresenterTest {
 
     private User fakeUser;
     private AuthToken fakeAuthToken;
-    private FollowService followingServiceMock;
+    private FollowServiceDelete followingServiceMock;
     private FollowingPresenter followingPresenterSpy;
     private FollowingPresenter.View followingViewMock;
 
     /**
      * Setup mocks and spies needed to let test cases control what users are returned
-     * by {@link FollowService}.
+     * by {@link FollowServiceDelete}.
      * Setup mock {@link FollowingPresenter} to verify that {@link FollowingPresenter}
      * correctly calls view methods.
      */
@@ -50,7 +49,7 @@ public class FollowingPresenterTest {
         FollowingPresenter followingPresenter = new FollowingPresenter(followingViewMock, fakeUser, fakeAuthToken);
         followingPresenterSpy = Mockito.spy(followingPresenter);
 
-        followingServiceMock = Mockito.mock(FollowService.class);
+        followingServiceMock = Mockito.mock(FollowServiceDelete.class);
         Mockito.doReturn(followingServiceMock).when(followingPresenterSpy).getFollowingService();
     }
 
@@ -82,7 +81,7 @@ public class FollowingPresenterTest {
                 Assertions.assertEquals(limit, FollowingPresenter.PAGE_SIZE);
                 Assertions.assertEquals(lastFollowee, followingPresenterSpy.getLastFollowee());
 
-                FollowService.GetFollowingObserver observer = invocation.getArgument(4);
+                FollowServiceDelete.GetFollowingObserver observer = invocation.getArgument(4);
                 observer.handleSuccess(followees, true);
                 return null;
             }
@@ -104,7 +103,7 @@ public class FollowingPresenterTest {
         Answer<Void> manyFolloweesAnswer = new Answer<Void>() {
             @Override
             public Void answer(InvocationOnMock invocation) throws Throwable {
-                FollowService.GetFollowingObserver observer = invocation.getArgument(4);
+                FollowServiceDelete.GetFollowingObserver observer = invocation.getArgument(4);
                 observer.handleSuccess(followees, true);
                 return null;
             }
@@ -131,7 +130,7 @@ public class FollowingPresenterTest {
         Answer<Void> failureAnswer = new Answer<Void>() {
             @Override
             public Void answer(InvocationOnMock invocation) throws Throwable {
-                FollowService.GetFollowingObserver observer = invocation.getArgument(4);
+                FollowServiceDelete.GetFollowingObserver observer = invocation.getArgument(4);
                 observer.handleFailure("failure message");
                 return null;
             }
@@ -153,7 +152,7 @@ public class FollowingPresenterTest {
         Answer<Void> exceptionAnswer = new Answer<Void>() {
             @Override
             public Void answer(InvocationOnMock invocation) throws Throwable {
-                FollowService.GetFollowingObserver observer = invocation.getArgument(4);
+                FollowServiceDelete.GetFollowingObserver observer = invocation.getArgument(4);
                 observer.handleException(new Exception("The exception message"));
                 return null;
             }
