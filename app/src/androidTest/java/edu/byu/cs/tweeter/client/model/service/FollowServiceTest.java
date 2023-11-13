@@ -14,11 +14,11 @@ import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.util.FakeData;
 
 public class FollowServiceTest {
-//
+
 //    private User currentUser;
 //    private AuthToken currentAuthToken;
 //
-//    private FollowServiceDelete followServiceSpy;
+//    private FollowService followServiceSpy;
 //    private FollowServiceObserver observer;
 //
 //    private CountDownLatch countDownLatch;
@@ -32,7 +32,7 @@ public class FollowServiceTest {
 //        currentUser = new User("FirstName", "LastName", null);
 //        currentAuthToken = new AuthToken();
 //
-//        followServiceSpy = Mockito.spy(new FollowServiceDelete());
+//        followServiceSpy = Mockito.spy(new FollowService());
 //
 //        // Setup an observer for the FollowService
 //        observer = new FollowServiceObserver();
@@ -56,7 +56,7 @@ public class FollowServiceTest {
 //     * on the countDownLatch so tests can wait for the background thread to call a method on the
 //     * observer.
 //     */
-//    private class FollowServiceObserver implements FollowServiceDelete.GetFollowingObserver {
+//    private class FollowServiceObserver implements Service.FollowObserver {
 //
 //        private boolean success;
 //        private String message;
@@ -65,7 +65,7 @@ public class FollowServiceTest {
 //        private Exception exception;
 //
 //        @Override
-//        public void handleSuccess(List<User> followees, boolean hasMorePages) {
+//        public void isFollowerSucceeded(List<User> followees, boolean hasMorePages) {
 //            this.success = true;
 //            this.message = null;
 //            this.followees = followees;
