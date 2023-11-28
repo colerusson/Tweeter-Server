@@ -5,26 +5,28 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 
 import edu.byu.cs.tweeter.model.net.request.FollowersRequest;
 import edu.byu.cs.tweeter.model.net.request.FollowingRequest;
+import edu.byu.cs.tweeter.model.net.response.FollowersCountResponse;
 import edu.byu.cs.tweeter.model.net.response.FollowersResponse;
 import edu.byu.cs.tweeter.model.net.response.FollowingResponse;
+import edu.byu.cs.tweeter.server.factory.DAOFactoryInterface;
+import edu.byu.cs.tweeter.server.factory.DynamoDAOFactory;
+import edu.byu.cs.tweeter.server.service.AuthtokenService;
 import edu.byu.cs.tweeter.server.service.FollowService;
 
 /**
  * An AWS lambda function that returns the users a user is being followed by.
  */
 public class GetFollowersHandler implements RequestHandler<FollowersRequest, FollowersResponse> {
-    /**
-     * Returns the users that the user specified in the request has following. Uses information in
-     * the request object to limit the number of followers returned and to return the next set of
-     * followers after any that were returned in a previous request.
-     *
-     * @param request contains the data required to fulfill the request.
-     * @param context the lambda context.
-     * @return the followers.
-     */
     @Override
     public FollowersResponse handleRequest(FollowersRequest request, Context context) {
-        FollowService service = new FollowService();
-        return service.getFollowers(request);
+        DAOFactoryInterface factory = new DynamoDAOFactory();
+        AuthtokenService authtokenService = new AuthtokenService(factory);
+
+        if (authtokenService.validateToken(request.getAuthToken())) {
+            FollowService service = new FollowService(factory);
+            return service.getFollowers(request);
+        } else {
+            return new FollowersResponse("Invalid auth token.");
+        }
     }
 }

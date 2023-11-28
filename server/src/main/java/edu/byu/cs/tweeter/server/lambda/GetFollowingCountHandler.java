@@ -5,21 +5,22 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 
 import edu.byu.cs.tweeter.model.net.request.FollowingCountRequest;
 import edu.byu.cs.tweeter.model.net.response.FollowingCountResponse;
+import edu.byu.cs.tweeter.server.factory.DAOFactoryInterface;
+import edu.byu.cs.tweeter.server.factory.DynamoDAOFactory;
+import edu.byu.cs.tweeter.server.service.AuthtokenService;
 import edu.byu.cs.tweeter.server.service.FollowService;
 
 public class GetFollowingCountHandler implements RequestHandler<FollowingCountRequest, FollowingCountResponse> {
-    /**
-     * Returns the followers count for the user specified in the request is following. Uses information in
-     * the request object to limit the number of followees returned and to return the next set of
-     * followees after any that were returned in a previous request.
-     *
-     * @param request contains the data required to fulfill the request.
-     * @param context the lambda context.
-     * @return the followees.
-     */
     @Override
     public FollowingCountResponse handleRequest(FollowingCountRequest request, Context context) {
-        FollowService service = new FollowService();
-        return service.getFollowingCount(request);
+        DAOFactoryInterface factory = new DynamoDAOFactory();
+        AuthtokenService authtokenService = new AuthtokenService(factory);
+
+        if (authtokenService.validateToken(request.getAuthToken())) {
+            FollowService service = new FollowService(factory);
+            return service.getFollowingCount(request);
+        } else {
+            return new FollowingCountResponse("Invalid auth token.");
+        }
     }
 }

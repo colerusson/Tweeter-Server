@@ -18,98 +18,91 @@ import edu.byu.cs.tweeter.model.net.response.FollowingCountResponse;
 import edu.byu.cs.tweeter.model.net.response.FollowingResponse;
 import edu.byu.cs.tweeter.model.net.response.IsFollowerResponse;
 import edu.byu.cs.tweeter.model.net.response.UnfollowResponse;
-import edu.byu.cs.tweeter.server.dao.FollowDAO;
+import edu.byu.cs.tweeter.server.daoInterface.FollowDAOInterface;
+import edu.byu.cs.tweeter.server.factory.DAOFactoryInterface;
 import edu.byu.cs.tweeter.util.Pair;
 
-/**
- * Contains the business logic for getting the users a user is following.
- */
 public class FollowService {
+    private final FollowDAOInterface followDAO;
 
-    /**
-     * Returns the users that the user specified in the request is following. Uses information in
-     * the request object to limit the number of followees returned and to return the next set of
-     * followees after any that were returned in a previous request. Uses the {@link FollowDAO} to
-     * get the followees.
-     *
-     * @param request contains the data required to fulfill the request.
-     * @return the followees.
-     */
+    public FollowService(DAOFactoryInterface factory) {
+        this.followDAO = factory.getFollowDAO();
+    }
+
     public FollowingResponse getFollowees(FollowingRequest request) {
-        if(request.getFollowerAlias() == null) {
+        if (request.getFollowerAlias() == null) {
             throw new RuntimeException("[Bad Request] Request needs to have a follower alias");
-        } else if(request.getLimit() <= 0) {
+        } else if (request.getLimit() <= 0) {
             throw new RuntimeException("[Bad Request] Request needs to have a positive limit");
         }
 
-        Pair<List<User>, Boolean> pair = getFollowingDAO().getFollowees(request.getFollowerAlias(), request.getLimit(), request.getLastFolloweeAlias());
+        Pair<List<User>, Boolean> pair = followDAO.getFollowees(request.getFollowerAlias(), request.getLimit(), request.getLastFolloweeAlias());
         return new FollowingResponse(pair.getFirst(), pair.getSecond());
     }
 
     public FollowersResponse getFollowers(FollowersRequest request) {
-        if(request.getFollowerAlias() == null) {
+        if (request.getFollowerAlias() == null) {
             throw new RuntimeException("[Bad Request] Request needs to have a follower alias");
-        } else if(request.getLimit() <= 0) {
+        } else if (request.getLimit() <= 0) {
             throw new RuntimeException("[Bad Request] Request needs to have a positive limit");
         }
 
-        Pair<List<User>, Boolean> pair = getFollowingDAO().getFollowers(request.getFollowerAlias(), request.getLimit(), request.getLastFollowerAlias());
+        Pair<List<User>, Boolean> pair = followDAO.getFollowers(request.getFollowerAlias(), request.getLimit(), request.getLastFollowerAlias());
         return new FollowersResponse(pair.getFirst(), pair.getSecond());
     }
 
     public FollowingCountResponse getFollowingCount(FollowingCountRequest request) {
-        if(request.getUserAlias() == null) {
+        if (request.getUserAlias() == null) {
             throw new RuntimeException("[Bad Request] Request needs to have a follower alias");
         }
 
-        int count = 20;
+        int count = followDAO.getFollowingCount(request.getUserAlias());
         return new FollowingCountResponse(count);
     }
 
     public FollowersCountResponse getFollowersCount(FollowersCountRequest request) {
-        if(request.getUserAlias() == null) {
+        if (request.getUserAlias() == null) {
             throw new RuntimeException("[Bad Request] Request needs to have a follower alias");
         }
 
-        int count = 20;
+        int count = followDAO.getFollowersCount(request.getUserAlias());
         return new FollowersCountResponse(count);
     }
 
     public IsFollowerResponse isFollower(IsFollowerRequest request) {
-        if(request.getFollowerAlias() == null) {
+        if (request.getFollowerAlias() == null) {
             throw new RuntimeException("[Bad Request] Request needs to have a follower alias");
-        } else if(request.getFolloweeAlias() == null) {
+        } else if (request.getFolloweeAlias() == null) {
             throw new RuntimeException("[Bad Request] Request needs to have a followee alias");
         }
 
-        boolean isFollower = new Random().nextInt() > 0;
+        boolean isFollower = followDAO.isFollower(request.getFollowerAlias(), request.getFolloweeAlias());
         return new IsFollowerResponse(isFollower);
     }
 
     public FollowResponse follow(FollowRequest request) {
-        if(request.getFollowee() == null) {
+        if (request.getFollowee() == null) {
             throw new RuntimeException("[Bad Request] Request needs to have a follower alias");
         }
 
-        return new FollowResponse(true, "Followed");
+        boolean success = followDAO.follow(request.getUserAlias(), request.getFollowee());
+        if (success) {
+            return new FollowResponse(true, "Followed");
+        } else {
+            return new FollowResponse(false, "Failed to follow");
+        }
     }
 
     public UnfollowResponse unfollow(UnfollowRequest request) {
-        if(request.getFollowee() == null) {
+        if (request.getFollowee() == null) {
             throw new RuntimeException("[Bad Request] Request needs to have a follower alias");
         }
 
-        return new UnfollowResponse(true, "Unfollowed");
-    }
-
-    /**
-     * Returns an instance of {@link FollowDAO}. Allows mocking of the FollowDAO class
-     * for testing purposes. All usages of FollowDAO should get their FollowDAO
-     * instance from this method to allow for mocking of the instance.
-     *
-     * @return the instance.
-     */
-    FollowDAO getFollowingDAO() {
-        return new FollowDAO();
+        boolean success = followDAO.unfollow(request.getUserAlias(), request.getFollowee());
+        if (success) {
+            return new UnfollowResponse(true, "Unfollowed");
+        } else {
+            return new UnfollowResponse(false, "Failed to unfollow");
+        }
     }
 }

@@ -5,24 +5,25 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 
 import edu.byu.cs.tweeter.model.net.request.FeedRequest;
 import edu.byu.cs.tweeter.model.net.response.FeedResponse;
+import edu.byu.cs.tweeter.server.factory.DAOFactoryInterface;
+import edu.byu.cs.tweeter.server.factory.DynamoDAOFactory;
+import edu.byu.cs.tweeter.server.service.AuthtokenService;
 import edu.byu.cs.tweeter.server.service.StatusService;
 
 /**
  * An AWS lambda function that returns the feed posts for a user
  */
 public class GetFeedHandler implements RequestHandler<FeedRequest, FeedResponse> {
-    /**
-     * Returns the feed posts for the user specified in the request. Uses information in
-     * the request object to limit the number of followees returned and to return the next set of
-     * followees after any that were returned in a previous request.
-     *
-     * @param request contains the data required to fulfill the request.
-     * @param context the lambda context.
-     * @return the posts.
-     */
     @Override
     public FeedResponse handleRequest(FeedRequest request, Context context) {
-        StatusService service = new StatusService();
-        return service.getFeed(request);
+        DAOFactoryInterface factory = new DynamoDAOFactory();
+        AuthtokenService authtokenService = new AuthtokenService(factory);
+
+        if (authtokenService.validateToken(request.getAuthToken())) {
+            StatusService service = new StatusService(factory);
+            return service.getFeed(request);
+        } else {
+            return new FeedResponse("Invalid auth token");
+        }
     }
 }
