@@ -12,7 +12,6 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
 public class AuthtokenDynamoDAO implements AuthtokenDAOInterface {
     private static final String TableName = "authtoken";
-    public static final String IndexName = "authtoken_index";
 
     private static final DynamoDbClient dynamoDbClient = DynamoDbClient.builder()
             .region(Region.US_WEST_2)

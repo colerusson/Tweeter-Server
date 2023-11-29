@@ -71,7 +71,7 @@ public class UserDynamoDAO implements UserDAOInterface {
         long timestamp = System.currentTimeMillis();
         AuthToken authToken = new AuthToken(authTokenString, timestamp);
 
-        User user = new User(firstName, lastName, image, username);
+        User user = new User(firstName, lastName, username, image);
         return new Pair<>(user, authToken);
     }
 

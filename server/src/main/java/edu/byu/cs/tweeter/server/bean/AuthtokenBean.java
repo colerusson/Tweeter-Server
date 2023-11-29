@@ -12,7 +12,6 @@ public class AuthtokenBean {
     private long timestamp;
 
     @DynamoDbPartitionKey
-    @DynamoDbSecondarySortKey(indexNames = AuthtokenDynamoDAO.IndexName)
     public String getAuthtoken() {
         return authtoken;
     }
