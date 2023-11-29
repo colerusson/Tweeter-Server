@@ -1,7 +1,5 @@
 package edu.byu.cs.tweeter.server.service;
 
-import com.amazonaws.services.lambda.runtime.Context;
-
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.net.request.GetUserRequest;
@@ -26,20 +24,23 @@ public class UserService {
         this.imageDAO = factory.getImageDAO();
     }
 
-    public LoginResponse login(LoginRequest request, Context context) {
+    public LoginResponse login(LoginRequest request) {
         if (request.getUsername() == null) {
-            throw new RuntimeException("[Bad Request] Missing a username");
+            return new LoginResponse("[Bad Request] Missing a username");
         } else if (request.getPassword() == null) {
-            throw new RuntimeException("[Bad Request] Missing a password");
+            return new LoginResponse("[Bad Request] Missing a password");
         }
 
         Pair<User, AuthToken> result = userDAO.login(request.getUsername(), request.getPassword());
+        if (result == null) {
+            return new LoginResponse("[Bad Request] Invalid username or password");
+        }
         return new LoginResponse(result.getFirst(), result.getSecond());
     }
 
     public LogoutResponse logout(LogoutRequest request) {
         if (request.getUsername() == null) {
-            throw new RuntimeException("[Bad Request] Missing a username");
+            return new LogoutResponse(false,"[Bad Request] Missing a username");
         }
 
         Pair<Boolean, String> result = userDAO.logout(request.getUsername());
@@ -48,25 +49,28 @@ public class UserService {
 
     public RegisterResponse register(RegisterRequest request) {
         if (request.getUsername() == null) {
-            throw new RuntimeException("[Bad Request] Missing a username");
+            return new RegisterResponse("[Bad Request] Missing a username");
         } else if (request.getPassword() == null) {
-            throw new RuntimeException("[Bad Request] Missing a password");
+            return new RegisterResponse("[Bad Request] Missing a password");
         } else if (request.getFirstName() == null) {
-            throw new RuntimeException("[Bad Request] Missing a first name");
+            return new RegisterResponse("[Bad Request] Missing a first name");
         } else if (request.getLastName() == null) {
-            throw new RuntimeException("[Bad Request] Missing a last name");
+            return new RegisterResponse("[Bad Request] Missing a last name");
         } else if (request.getImageUrl() == null) {
-            throw new RuntimeException("[Bad Request] Missing an image");
+            return new RegisterResponse("[Bad Request] Missing an image");
         }
 
         Pair<User, AuthToken> result = userDAO.register(request.getUsername(), request.getPassword(),
                 request.getFirstName(), request.getLastName(), request.getImageUrl());
+        if (result == null) {
+            return new RegisterResponse("[Bad Request] Username already taken");
+        }
         return new RegisterResponse(result.getFirst(), result.getSecond());
     }
 
     public GetUserResponse getUser(GetUserRequest request) {
         if (request.getAlias() == null) {
-            throw new RuntimeException("[Bad Request] Missing a username");
+            return new GetUserResponse("[Bad Request] Missing a username");
         }
 
         User user = userDAO.getUser(request.getAlias());

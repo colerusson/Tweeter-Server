@@ -1,5 +1,7 @@
 package edu.byu.cs.tweeter.server.service;
 
+import org.springframework.security.core.parameters.P;
+
 import java.util.List;
 
 import edu.byu.cs.tweeter.model.domain.Status;
@@ -25,9 +27,9 @@ public class StatusService {
 
     public FeedResponse getFeed(FeedRequest request) {
         if (request.getUserAlias() == null) {
-            throw new RuntimeException("[Bad Request] Request needs to have a user alias");
+            return new FeedResponse("[Bad Request] Request needs to have a user alias");
         } else if (request.getLimit() <= 0) {
-            throw new RuntimeException("[Bad Request] Request needs to have a positive limit");
+            return new FeedResponse("[Bad Request] Request needs to have a positive limit");
         }
 
         Pair<List<Status>, Boolean> pair = feedDAO.getFeed(request.getUserAlias(), request.getLimit(), request.getLastPostTime());
@@ -36,9 +38,9 @@ public class StatusService {
 
     public StoryResponse getStory(StoryRequest request) {
         if (request.getUserAlias() == null) {
-            throw new RuntimeException("[Bad Request] Request needs to have a user alias");
+            return new StoryResponse("[Bad Request] Request needs to have a user alias");
         } else if (request.getLimit() <= 0) {
-            throw new RuntimeException("[Bad Request] Request needs to have a positive limit");
+            return new StoryResponse("[Bad Request] Request needs to have a positive limit");
         }
 
         Pair<List<Status>, Boolean> pair = storyDAO.getStory(request.getUserAlias(), request.getLimit(), request.getLastStoryTime());
@@ -47,13 +49,13 @@ public class StatusService {
 
     public PostStatusResponse postStatus(PostStatusRequest request) {
         if (request == null) {
-            throw new RuntimeException("[Bad Request] Request needs to have a status");
+            return new PostStatusResponse(false, "[Bad Request] Request needs to have a status");
         } else if (request.getUserAlias() == null) {
-            throw new RuntimeException("[Bad Request] Request needs to have a user");
+            return new PostStatusResponse(false, "[Bad Request] Request needs to have a user");
         } else if (request.getPost() == null) {
-            throw new RuntimeException("[Bad Request] Request needs to have a user alias");
+            return new PostStatusResponse(false, "[Bad Request] Request needs to have a user alias");
         } else if (request.getTimestamp() == 0) {
-            throw new RuntimeException("[Bad Request] Request needs to have a message");
+            return new PostStatusResponse(false, "[Bad Request] Request needs to have a message");
         }
 
         return new PostStatusResponse(true, "Post successful");

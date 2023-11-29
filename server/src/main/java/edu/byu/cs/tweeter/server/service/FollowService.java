@@ -31,9 +31,9 @@ public class FollowService {
 
     public FollowingResponse getFollowees(FollowingRequest request) {
         if (request.getFollowerAlias() == null) {
-            throw new RuntimeException("[Bad Request] Request needs to have a follower alias");
+            return new FollowingResponse("[Bad Request] Request needs to have a follower alias");
         } else if (request.getLimit() <= 0) {
-            throw new RuntimeException("[Bad Request] Request needs to have a positive limit");
+            return new FollowingResponse("[Bad Request] Request needs to have a positive limit");
         }
 
         Pair<List<User>, Boolean> pair = followDAO.getFollowees(request.getFollowerAlias(), request.getLimit(), request.getLastFolloweeAlias());
@@ -42,9 +42,9 @@ public class FollowService {
 
     public FollowersResponse getFollowers(FollowersRequest request) {
         if (request.getFollowerAlias() == null) {
-            throw new RuntimeException("[Bad Request] Request needs to have a follower alias");
+            return new FollowersResponse("[Bad Request] Request needs to have a follower alias");
         } else if (request.getLimit() <= 0) {
-            throw new RuntimeException("[Bad Request] Request needs to have a positive limit");
+            return new FollowersResponse("[Bad Request] Request needs to have a positive limit");
         }
 
         Pair<List<User>, Boolean> pair = followDAO.getFollowers(request.getFollowerAlias(), request.getLimit(), request.getLastFollowerAlias());
@@ -53,7 +53,7 @@ public class FollowService {
 
     public FollowingCountResponse getFollowingCount(FollowingCountRequest request) {
         if (request.getUserAlias() == null) {
-            throw new RuntimeException("[Bad Request] Request needs to have a follower alias");
+            return new FollowingCountResponse("[Bad Request] Request needs to have a follower alias");
         }
 
         int count = followDAO.getFollowingCount(request.getUserAlias());
@@ -62,7 +62,7 @@ public class FollowService {
 
     public FollowersCountResponse getFollowersCount(FollowersCountRequest request) {
         if (request.getUserAlias() == null) {
-            throw new RuntimeException("[Bad Request] Request needs to have a follower alias");
+            return new FollowersCountResponse("[Bad Request] Request needs to have a follower alias");
         }
 
         int count = followDAO.getFollowersCount(request.getUserAlias());
@@ -71,9 +71,9 @@ public class FollowService {
 
     public IsFollowerResponse isFollower(IsFollowerRequest request) {
         if (request.getFollowerAlias() == null) {
-            throw new RuntimeException("[Bad Request] Request needs to have a follower alias");
+            return new IsFollowerResponse("[Bad Request] Request needs to have a follower alias");
         } else if (request.getFolloweeAlias() == null) {
-            throw new RuntimeException("[Bad Request] Request needs to have a followee alias");
+            return new IsFollowerResponse("[Bad Request] Request needs to have a followee alias");
         }
 
         boolean isFollower = followDAO.isFollower(request.getFollowerAlias(), request.getFolloweeAlias());
@@ -82,7 +82,7 @@ public class FollowService {
 
     public FollowResponse follow(FollowRequest request) {
         if (request.getFollowee() == null) {
-            throw new RuntimeException("[Bad Request] Request needs to have a follower alias");
+            return new FollowResponse(false, "[Bad Request] Request needs to have a follower alias");
         }
 
         boolean success = followDAO.follow(request.getUserAlias(), request.getFollowee());
@@ -95,7 +95,7 @@ public class FollowService {
 
     public UnfollowResponse unfollow(UnfollowRequest request) {
         if (request.getFollowee() == null) {
-            throw new RuntimeException("[Bad Request] Request needs to have a follower alias");
+            return new UnfollowResponse(false, "[Bad Request] Request needs to have a follower alias");
         }
 
         boolean success = followDAO.unfollow(request.getUserAlias(), request.getFollowee());
