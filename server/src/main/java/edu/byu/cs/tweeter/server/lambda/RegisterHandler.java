@@ -19,7 +19,12 @@ public class RegisterHandler implements RequestHandler<RegisterRequest, Register
     public RegisterResponse handleRequest(RegisterRequest request, Context context) {
         DAOFactoryInterface factory = new DynamoDAOFactory();
         UserService userService = new UserService(factory);
+
+        String imageUrl = userService.uploadImage(request.getImageUrl(), request.getUsername());
+
+        request.setImageUrl(imageUrl);
         RegisterResponse registerResponse = userService.register(request);
+
         if (registerResponse.isSuccess()) {
             AuthtokenService authtokenService = new AuthtokenService(factory);
             authtokenService.addAuthToken(registerResponse.getUser().getAlias(), registerResponse.getAuthToken());

@@ -12,15 +12,18 @@ import edu.byu.cs.tweeter.model.net.response.GetUserResponse;
 import edu.byu.cs.tweeter.model.net.response.LoginResponse;
 import edu.byu.cs.tweeter.model.net.response.LogoutResponse;
 import edu.byu.cs.tweeter.model.net.response.RegisterResponse;
+import edu.byu.cs.tweeter.server.daoInterface.ImageDAOInterface;
 import edu.byu.cs.tweeter.server.daoInterface.UserDAOInterface;
 import edu.byu.cs.tweeter.server.factory.DAOFactoryInterface;
 import edu.byu.cs.tweeter.util.Pair;
 
 public class UserService {
     private final UserDAOInterface userDAO;
+    private final ImageDAOInterface imageDAO;
 
     public UserService(DAOFactoryInterface factory) {
         this.userDAO = factory.getUserDAO();
+        this.imageDAO = factory.getImageDAO();
     }
 
     public LoginResponse login(LoginRequest request, Context context) {
@@ -68,5 +71,9 @@ public class UserService {
 
         User user = userDAO.getUser(request.getAlias());
         return new GetUserResponse(user);
+    }
+
+    public String uploadImage(String imageUrl, String userAlias) {
+        return imageDAO.uploadImage(imageUrl, userAlias);
     }
 }
