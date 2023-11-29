@@ -32,7 +32,13 @@ public class GetFeedTask extends PagedTask<Status> {
     protected Pair<List<Status>, Boolean> getItems() {
         try {
             String targetUserAlias = getTargetUser() == null ? null : getTargetUser().getAlias();
-            Long lastPostTime = getLastItem() == null ? null : getLastItem().getTimestamp();
+            long lastPostTime;
+
+            if (getLastItem() != null) {
+                lastPostTime = getLastItem().getTimestamp();
+            } else {
+                lastPostTime = 0;
+            }
 
             FeedRequest request = new FeedRequest(getAuthToken(), targetUserAlias, getLimit(), lastPostTime);
             FeedResponse response = getServerFacade().getFeed(request, URL_PATH);

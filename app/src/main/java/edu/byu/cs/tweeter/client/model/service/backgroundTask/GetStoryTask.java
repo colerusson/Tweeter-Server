@@ -31,7 +31,12 @@ public class GetStoryTask extends PagedTask<Status> {
     protected Pair<List<Status>, Boolean> getItems() {
         try {
             String targetUserAlias = getTargetUser() == null ? null : getTargetUser().getAlias();
-            Long lastPostTime = getLastItem() == null ? null : getLastItem().getTimestamp();
+            long lastPostTime;
+            if (getLastItem() != null) {
+                lastPostTime = getLastItem().getTimestamp();
+            } else {
+                lastPostTime = 0;
+            }
 
             StoryRequest request = new StoryRequest(getAuthToken(), targetUserAlias, getLimit(), lastPostTime);
             StoryResponse response = getServerFacade().getStory(request, URL_PATH);

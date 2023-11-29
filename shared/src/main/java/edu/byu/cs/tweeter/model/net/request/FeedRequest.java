@@ -11,7 +11,7 @@ public class FeedRequest {
     private AuthToken authToken;
     private String userAlias;
     private int limit;
-    private Long lastPostTime;
+    private long lastPostTime;
 
     /**
      * Allows construction of the object from Json. Private so it won't be called in normal code.

@@ -55,8 +55,10 @@ public abstract class PagedTask<T> extends AuthenticatedTask {
     @Override
     protected void doTask() throws IOException, TweeterRemoteException {
         Pair<List<T>, Boolean> pageOfItems = getItems();
-        setItems(pageOfItems.getFirst());
-        setHasMorePages(pageOfItems.getSecond());
+        if (pageOfItems != null) {
+            setItems(pageOfItems.getFirst());
+            setHasMorePages(pageOfItems.getSecond());
+        }
     }
 
     protected abstract Pair<List<T>, Boolean> getItems() throws IOException, TweeterRemoteException;

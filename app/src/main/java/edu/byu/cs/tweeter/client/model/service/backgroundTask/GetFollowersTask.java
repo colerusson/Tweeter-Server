@@ -32,6 +32,10 @@ public class GetFollowersTask extends PagedTask<User> {
             String targetUserAlias = getTargetUser() == null ? null : getTargetUser().getAlias();
             String lastFollowerAlias = getLastItem() == null ? null : getLastItem().getAlias();
 
+            if (targetUserAlias == null) {
+                return null;
+            }
+
             FollowersRequest request = new FollowersRequest(getAuthToken(), targetUserAlias, getLimit(), lastFollowerAlias);
             FollowersResponse response = getServerFacade().getFollowers(request, URL_PATH);
 
