@@ -1,7 +1,5 @@
 package edu.byu.cs.tweeter.server.dao;
 
-import com.amazonaws.services.lambda.runtime.Context;
-
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.server.bean.UserBean;
@@ -13,6 +11,7 @@ import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 public class UserDynamoDAO implements UserDAOInterface {
     private static final String TableName = "user";
@@ -41,7 +40,10 @@ public class UserDynamoDAO implements UserDAOInterface {
             return null;
         }
 
-        if (!userBean.getPassword().equals(password)) {
+        String storedHashedPassword = userBean.getPassword();
+
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        if (!encoder.matches(password, storedHashedPassword)) {
             return null;
         }
 
@@ -60,8 +62,11 @@ public class UserDynamoDAO implements UserDAOInterface {
         UserBean userBean = new UserBean();
 
         userBean.setAlias(username);
-        // TODO: hash password
-        userBean.setPassword(password);
+
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String hashedPassword = encoder.encode(password);
+        userBean.setPassword(hashedPassword);
+
         userBean.setFirst_name(firstName);
         userBean.setLast_name(lastName);
         userBean.setImage_url(image);

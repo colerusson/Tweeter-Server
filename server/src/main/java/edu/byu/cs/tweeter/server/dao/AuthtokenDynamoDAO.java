@@ -34,7 +34,20 @@ public class AuthtokenDynamoDAO implements AuthtokenDAOInterface {
         Key key = Key.builder().partitionValue(token.getToken()).build();
 
         AuthtokenBean authtokenBean = table.getItem(key);
-        return authtokenBean != null;
+        long currentTime = System.currentTimeMillis();
+        long tokenTime = authtokenBean.getTimestamp();
+
+        long twentyFourHoursInMillis = 24 * 60 * 60 * 1000;
+
+        if (currentTime - tokenTime > twentyFourHoursInMillis) {
+            table.deleteItem(key);
+            return false;
+        }
+
+        authtokenBean.setTimestamp(currentTime);
+        table.putItem(authtokenBean);
+
+        return true;
     }
 
     @Override
