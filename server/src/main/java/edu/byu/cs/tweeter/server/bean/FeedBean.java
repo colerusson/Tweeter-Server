@@ -12,6 +12,7 @@ public class FeedBean {
     private String receiver_alias;
     private long timestamp;
     private String message;
+    private String poster_alias;
 
     @DynamoDbPartitionKey
     @DynamoDbSecondarySortKey(indexNames = FeedDynamoDAO.IndexName)
@@ -39,5 +40,13 @@ public class FeedBean {
 
     public String getMessage() {
         return message;
+    }
+
+    public void setPoster_alias(String poster_alias) {
+        this.poster_alias = poster_alias;
+    }
+
+    public String getPoster_alias() {
+        return poster_alias;
     }
 }

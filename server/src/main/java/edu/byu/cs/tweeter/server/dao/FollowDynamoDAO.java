@@ -179,6 +179,8 @@ public class FollowDynamoDAO implements FollowDAOInterface {
 
     @Override
     public Pair<List<User>, Boolean> getFollowers(String followerAlias, int limit, String lastFollowerAlias) {
+        // TODO: Change this to use index
+
         DynamoDbTable<FollowBean> table = getClient().table(TableName, TableSchema.fromBean(FollowBean.class));
         Key key = Key.builder().partitionValue(followerAlias).build();
 
@@ -222,10 +224,11 @@ public class FollowDynamoDAO implements FollowDAOInterface {
 
     private User convertToUser(FollowBean followBean, boolean isFollower) {
         UserDynamoDAO userDAO = new UserDynamoDAO();
-        if (isFollower) {
-            return userDAO.getUser(followBean.getFollower_alias());
-        } else {
-            return userDAO.getUser(followBean.getFollowee_alias());
-        }
+        return userDAO.getUser(followBean.getFollowee_alias());
+//        if (isFollower) {
+//            return userDAO.getUser(followBean.getFollower_alias());
+//        } else {
+//            return userDAO.getUser(followBean.getFollowee_alias());
+//        }
     }
 }

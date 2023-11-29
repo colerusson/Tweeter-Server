@@ -56,6 +56,7 @@ public class FeedDynamoDAO implements FeedDAOInterface {
                 feedBean.setReceiver_alias(followerAlias);
                 feedBean.setTimestamp(timestamp);
                 feedBean.setMessage(post);
+                feedBean.setPoster_alias(userAlias);
                 feedTable.putItem(feedBean);
             }
         }
@@ -65,6 +66,8 @@ public class FeedDynamoDAO implements FeedDAOInterface {
 
     @Override
     public Pair<List<Status>, Boolean> getFeed(String userAlias, int limit, long lastFeedTime) {
+        // TODO: Fix this to return the correct names for the user of the post, no the user of the feed
+
         DynamoDbTable<FeedBean> table = getClient().table(TableName, TableSchema.fromBean(FeedBean.class));
         Key key = Key.builder().partitionValue(userAlias).build();
 
@@ -103,7 +106,7 @@ public class FeedDynamoDAO implements FeedDAOInterface {
     }
 
     private Status convertToStatus(FeedBean feedBean) {
-        User user = getUser(feedBean.getReceiver_alias());
+        User user = getUser(feedBean.getPoster_alias());
         List<String> urls = getUrls(feedBean.getMessage());
         List<String> mentions = getMentions(feedBean.getMessage());
 
