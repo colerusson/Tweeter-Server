@@ -7,8 +7,6 @@ import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.*;
 public class FollowBean {
     private String follower_alias;
     private String followee_alias;
-    private String follower_name;
-    private String followee_name;
 
     @DynamoDbPartitionKey
     @DynamoDbSecondarySortKey(indexNames = FollowDynamoDAO.IndexName)
@@ -28,21 +26,5 @@ public class FollowBean {
 
     public void setFollowee_alias(String followeeHandle) {
         this.followee_alias = followeeHandle;
-    }
-
-    public void setFollower_name(String followerName) {
-        this.follower_name = followerName;
-    }
-
-    public void setFollowee_name(String followeeName) {
-        this.followee_name = followeeName;
-    }
-
-    public String getFollower_name() {
-        return follower_name;
-    }
-
-    public String getFollowee_name() {
-        return followee_name;
     }
 }
