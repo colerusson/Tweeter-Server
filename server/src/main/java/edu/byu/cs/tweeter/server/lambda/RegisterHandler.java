@@ -7,6 +7,7 @@ import edu.byu.cs.tweeter.model.net.request.RegisterRequest;
 import edu.byu.cs.tweeter.model.net.response.RegisterResponse;
 import edu.byu.cs.tweeter.server.factory.DAOFactoryInterface;
 import edu.byu.cs.tweeter.server.factory.DynamoDAOFactory;
+import edu.byu.cs.tweeter.server.service.AuthtokenService;
 import edu.byu.cs.tweeter.server.service.UserService;
 
 /**
@@ -18,6 +19,11 @@ public class RegisterHandler implements RequestHandler<RegisterRequest, Register
     public RegisterResponse handleRequest(RegisterRequest request, Context context) {
         DAOFactoryInterface factory = new DynamoDAOFactory();
         UserService userService = new UserService(factory);
-        return userService.register(request);
+        RegisterResponse registerResponse = userService.register(request);
+        if (registerResponse.isSuccess()) {
+            AuthtokenService authtokenService = new AuthtokenService(factory);
+            authtokenService.addAuthToken(registerResponse.getUser().getAlias(), registerResponse.getAuthToken());
+        }
+        return registerResponse;
     }
 }

@@ -23,7 +23,11 @@ public class LogoutHandler implements RequestHandler<LogoutRequest, LogoutRespon
 
         if (authtokenService.validateToken(request.getAuthToken())) {
             UserService userService = new UserService(factory);
-            return userService.logout(request);
+            LogoutResponse logoutResponse = userService.logout(request);
+            if (logoutResponse.isSuccess()) {
+                authtokenService.deleteToken(request.getAuthToken());
+            }
+            return logoutResponse;
         } else {
             return new LogoutResponse(false, "Invalid auth token");
         }

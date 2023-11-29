@@ -15,7 +15,11 @@ public class AuthtokenService {
         return authtokenDAO.validateToken(token);
     }
 
-    public String generateToken(String alias) {
-        return authtokenDAO.generateToken(alias);
+    public void addAuthToken(String alias, AuthToken authToken) {
+        authtokenDAO.addAuthToken(alias, authToken);
+    }
+
+    public void deleteToken(AuthToken authToken) {
+        authtokenDAO.deleteToken(authToken);
     }
 }
