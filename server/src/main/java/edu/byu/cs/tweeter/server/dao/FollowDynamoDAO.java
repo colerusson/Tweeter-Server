@@ -11,7 +11,9 @@ import edu.byu.cs.tweeter.server.bean.FollowBean;
 import edu.byu.cs.tweeter.server.bean.StoryBean;
 import edu.byu.cs.tweeter.server.daoInterface.FollowDAOInterface;
 import edu.byu.cs.tweeter.util.Pair;
+import software.amazon.awssdk.core.pagination.sync.SdkIterable;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbIndex;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
@@ -63,14 +65,15 @@ public class FollowDynamoDAO implements FollowDAOInterface {
 
     @Override
     public int getFollowersCount(String userAlias) {
-        DynamoDbTable<FollowBean> table = getClient().table(TableName, TableSchema.fromBean(FollowBean.class));
+        DynamoDbIndex<FollowBean> index = getClient().table(TableName, TableSchema.fromBean(FollowBean.class)).index(IndexName);
 
-        QueryConditional queryConditional = QueryConditional.sortGreaterThanOrEqualTo(Key.builder().partitionValue(userAlias).build());
+        QueryConditional queryConditional = QueryConditional.keyEqualTo(Key.builder().partitionValue(userAlias).build());
         QueryEnhancedRequest queryRequest = QueryEnhancedRequest.builder().queryConditional(queryConditional).build();
 
         int count = 0;
 
-        PageIterable<FollowBean> pages = table.query(queryRequest);
+        SdkIterable<Page<FollowBean>> iterable = index.query(queryRequest);
+        PageIterable<FollowBean> pages = PageIterable.create(iterable);
         for (Page<FollowBean> page : pages) {
             count += page.items().size();
         }
