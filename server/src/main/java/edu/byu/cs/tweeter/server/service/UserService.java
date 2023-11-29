@@ -1,5 +1,7 @@
 package edu.byu.cs.tweeter.server.service;
 
+import com.amazonaws.services.lambda.runtime.Context;
+
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.net.request.GetUserRequest;
@@ -21,10 +23,10 @@ public class UserService {
         this.userDAO = factory.getUserDAO();
     }
 
-    public LoginResponse login(LoginRequest request) {
+    public LoginResponse login(LoginRequest request, Context context) {
         if (request.getUsername() == null) {
             throw new RuntimeException("[Bad Request] Missing a username");
-        } else if(request.getPassword() == null) {
+        } else if (request.getPassword() == null) {
             throw new RuntimeException("[Bad Request] Missing a password");
         }
 

@@ -1,9 +1,8 @@
 package edu.byu.cs.tweeter.server.bean;
 
-import edu.byu.cs.tweeter.server.dao.UserDynamoDAO;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSecondarySortKey;
+
 
 @DynamoDbBean
 public class UserBean {
@@ -14,7 +13,6 @@ public class UserBean {
     private String image_url;
 
     @DynamoDbPartitionKey
-    @DynamoDbSecondarySortKey(indexNames = UserDynamoDAO.IndexName)
     public String getAlias() {
         return alias;
     }

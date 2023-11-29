@@ -24,7 +24,6 @@ public abstract class BackgroundTask implements Runnable {
     protected Handler messageHandler;
     private ServerFacade serverFacade;
     private Cache cache;
-    private AuthToken authToken;
 
     public BackgroundTask(Handler messageHandler) {
         this.messageHandler = messageHandler;
@@ -90,13 +89,5 @@ public abstract class BackgroundTask implements Runnable {
         }
 
         return cache;
-    }
-
-    public AuthToken getAuthToken() {
-        return getCache().getCurrUserAuthToken();
-    }
-
-    protected FakeData getFakeData() {
-        return FakeData.getInstance();
     }
 }

@@ -1,5 +1,7 @@
 package edu.byu.cs.tweeter.server.dao;
 
+import com.amazonaws.services.lambda.runtime.Context;
+
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.server.bean.UserBean;
@@ -14,7 +16,6 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
 public class UserDynamoDAO implements UserDAOInterface {
     private static final String TableName = "user";
-    public static final String IndexName = "user_index";
 
     private static final DynamoDbClient dynamoDbClient = DynamoDbClient.builder()
             .region(Region.US_WEST_2)
@@ -31,14 +32,15 @@ public class UserDynamoDAO implements UserDAOInterface {
         return enhancedClient;
     }
     @Override
-    public Pair<User, AuthToken> login(String username, String password) {
+    public Pair<User, AuthToken> login(String alias, String password) {
         DynamoDbTable<UserBean> table = getClient().table(TableName, TableSchema.fromBean(UserBean.class));
-        Key key = Key.builder().partitionValue(username).build();
+        Key key = Key.builder().partitionValue(alias).build();
 
         UserBean userBean = table.getItem(key);
         if (userBean == null) {
             return null;
         }
+
         if (!userBean.getPassword().equals(password)) {
             return null;
         }

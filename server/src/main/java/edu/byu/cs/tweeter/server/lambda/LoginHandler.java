@@ -20,7 +20,7 @@ public class LoginHandler implements RequestHandler<LoginRequest, LoginResponse>
     public LoginResponse handleRequest(LoginRequest loginRequest, Context context) {
         DAOFactoryInterface factory = new DynamoDAOFactory();
         UserService userService = new UserService(factory);
-        LoginResponse loginResponse = userService.login(loginRequest);
+        LoginResponse loginResponse = userService.login(loginRequest, context);
         if (loginResponse.isSuccess()) {
             AuthtokenService authtokenService = new AuthtokenService(factory);
             authtokenService.addAuthToken(loginResponse.getUser().getAlias(), loginResponse.getAuthToken());
