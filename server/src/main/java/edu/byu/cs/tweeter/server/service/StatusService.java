@@ -1,7 +1,5 @@
 package edu.byu.cs.tweeter.server.service;
 
-import org.springframework.security.core.parameters.P;
-
 import java.util.List;
 
 import edu.byu.cs.tweeter.model.domain.Status;
@@ -58,6 +56,15 @@ public class StatusService {
             return new PostStatusResponse(false, "[Bad Request] Request needs to have a message");
         }
 
-        return new PostStatusResponse(true, "Post successful");
+        Boolean result = storyDAO.postStatus(request.getUserAlias(), request.getPost(), request.getTimestamp());
+        if (result) {
+            result = feedDAO.postStatus(request.getUserAlias(), request.getPost(), request.getTimestamp());
+            if (result) {
+                return new PostStatusResponse(true);
+            } else {
+                return new PostStatusResponse(true, "No followers");
+            }
+        }
+        return new PostStatusResponse(false, "Could not post status");
     }
 }

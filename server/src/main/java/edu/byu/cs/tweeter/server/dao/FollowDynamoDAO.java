@@ -64,4 +64,8 @@ public class FollowDynamoDAO implements FollowDAOInterface {
     public boolean unfollow(String followerAlias, String followeeAlias) {
         return false;
     }
+
+    public List<String> getAllFollowers(String userAlias) {
+        return null;
+    }
 }

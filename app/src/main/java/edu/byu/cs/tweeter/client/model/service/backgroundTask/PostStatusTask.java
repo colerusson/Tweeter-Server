@@ -30,13 +30,13 @@ public class PostStatusTask extends AuthenticatedTask {
         try {
             User currUser = status.getUser();
             String post = status.getPost();
-            Long timestamp = status.getTimestamp();
+            long timestamp = status.getTimestamp();
 
             PostStatusRequest request = new PostStatusRequest(getAuthToken(), currUser.getAlias(), post, timestamp);
             PostStatusResponse response = getServerFacade().postStatus(request, URL_PATH);
 
             if (response.isSuccess()) {
-                // TODO: Implement this method when the database is ready.
+                loadSuccessBundle(new Bundle());
             } else {
                 throw new RuntimeException(response.getMessage());
             }
@@ -47,6 +47,7 @@ public class PostStatusTask extends AuthenticatedTask {
 
     @Override
     protected void loadSuccessBundle(Bundle msgBundle) {
-        // TODO: Implement this method when the database is ready.
+        msgBundle.putBoolean(AuthenticatedTask.SUCCESS_KEY, true);
+        msgBundle.putString(AuthenticatedTask.MESSAGE_KEY, "Status posted successfully!");
     }
 }
