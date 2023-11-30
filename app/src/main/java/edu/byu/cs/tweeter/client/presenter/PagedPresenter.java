@@ -15,7 +15,7 @@ public abstract class PagedPresenter<T> extends Presenter {
         void addMoreItems(List<U> items);
         void goToUser(User user);
     }
-    private static final int PAGE_SIZE = 10;
+    private static final int PAGE_SIZE = 5;
     private T lastItem;
     private boolean hasMorePages;
     private boolean isLoading;
