@@ -150,7 +150,7 @@ public class FollowDynamoDAO implements FollowDAOInterface {
         if (isNonEmptyString(lastFolloweeAlias)) {
             Map<String, AttributeValue> startKey = new HashMap<>();
             startKey.put(FolloweeAttr, AttributeValue.builder().s(followerAlias).build());
-            startKey.put(FollowerAttr, AttributeValue.builder().n(String.valueOf(lastFolloweeAlias)).build());
+            startKey.put(FollowerAttr, AttributeValue.builder().n(lastFolloweeAlias).build());
 
             requestBuilder.exclusiveStartKey(startKey);
         }
@@ -179,9 +179,7 @@ public class FollowDynamoDAO implements FollowDAOInterface {
 
     @Override
     public Pair<List<User>, Boolean> getFollowers(String followerAlias, int limit, String lastFollowerAlias) {
-        // TODO: Change this to use index
-
-        DynamoDbTable<FollowBean> table = getClient().table(TableName, TableSchema.fromBean(FollowBean.class));
+        DynamoDbIndex<FollowBean> index = getClient().table(TableName, TableSchema.fromBean(FollowBean.class)).index(IndexName);
         Key key = Key.builder().partitionValue(followerAlias).build();
 
         QueryEnhancedRequest.Builder requestBuilder = QueryEnhancedRequest.builder()
@@ -191,7 +189,7 @@ public class FollowDynamoDAO implements FollowDAOInterface {
         if (isNonEmptyString(lastFollowerAlias)) {
             Map<String, AttributeValue> startKey = new HashMap<>();
             startKey.put(FollowerAttr, AttributeValue.builder().s(followerAlias).build());
-            startKey.put(FolloweeAttr, AttributeValue.builder().n(String.valueOf(lastFollowerAlias)).build());
+            startKey.put(FolloweeAttr, AttributeValue.builder().n(lastFollowerAlias).build());
 
             requestBuilder.exclusiveStartKey(startKey);
         }
@@ -200,7 +198,8 @@ public class FollowDynamoDAO implements FollowDAOInterface {
 
         DataPage<User> result = new DataPage<>();
 
-        PageIterable<FollowBean> pages = table.query(request);
+        SdkIterable<Page<FollowBean>> iterable = index.query(request);
+        PageIterable<FollowBean> pages = PageIterable.create(iterable);
         try {
             pages.stream()
                     .limit(1)
@@ -224,11 +223,10 @@ public class FollowDynamoDAO implements FollowDAOInterface {
 
     private User convertToUser(FollowBean followBean, boolean isFollower) {
         UserDynamoDAO userDAO = new UserDynamoDAO();
-        return userDAO.getUser(followBean.getFollowee_alias());
-//        if (isFollower) {
-//            return userDAO.getUser(followBean.getFollower_alias());
-//        } else {
-//            return userDAO.getUser(followBean.getFollowee_alias());
-//        }
+        if (isFollower) {
+            return userDAO.getUser(followBean.getFollower_alias());
+        } else {
+            return userDAO.getUser(followBean.getFollowee_alias());
+        }
     }
 }
