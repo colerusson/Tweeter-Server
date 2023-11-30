@@ -169,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
 
     @Override
     public void isFollower(boolean isFollower) {
-        updateFollowButton(!isFollower);
+        updateFollowButton(isFollower);
     }
 
     @Override
