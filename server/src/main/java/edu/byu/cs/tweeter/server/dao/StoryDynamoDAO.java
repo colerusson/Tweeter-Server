@@ -56,6 +56,7 @@ public class StoryDynamoDAO implements StoryDAOInterface {
 
     @Override
     public Pair<List<Status>, Boolean> getStory(String userAlias, int limit, long lastStoryTime) {
+        // TODO: Sort this by timestamp from newest to oldest
         DynamoDbTable<StoryBean> table = getClient().table(TableName, TableSchema.fromBean(StoryBean.class));
         Key key = Key.builder().partitionValue(userAlias).build();
 

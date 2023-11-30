@@ -66,8 +66,7 @@ public class FeedDynamoDAO implements FeedDAOInterface {
 
     @Override
     public Pair<List<Status>, Boolean> getFeed(String userAlias, int limit, long lastFeedTime) {
-        // TODO: Fix this so it returns the feed sorted by timestamp (newest first)
-
+        // TODO: Sort this by timestamp from newest to oldest
         DynamoDbTable<FeedBean> table = getClient().table(TableName, TableSchema.fromBean(FeedBean.class));
         Key key = Key.builder().partitionValue(userAlias).build();
 
