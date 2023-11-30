@@ -103,6 +103,7 @@ public class StoryDynamoDAO implements StoryDAOInterface {
     }
 
     private User getUser(String userAlias) {
+        // TODO: Fix this to avoid talking to another DAO
         UserDynamoDAO userDAO = new UserDynamoDAO();
         return userDAO.getUser(userAlias);
     }

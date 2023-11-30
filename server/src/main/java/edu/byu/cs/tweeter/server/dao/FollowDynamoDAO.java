@@ -224,6 +224,7 @@ public class FollowDynamoDAO implements FollowDAOInterface {
     }
 
     private User convertToUser(FollowBean followBean, boolean isFollower) {
+        // TODO: Fix this to avoid talking to another DAO
         UserDynamoDAO userDAO = new UserDynamoDAO();
         if (isFollower) {
             return userDAO.getUser(followBean.getFollower_alias());
