@@ -49,11 +49,11 @@ public class StoryRequest {
         this.limit = limit;
     }
 
-    public Long getLastStoryTime() {
+    public Long getLastPostTime() {
         return lastPostTime;
     }
 
-    public void setLastStoryTime(Long lastPostTime) {
+    public void setLastPostTime(Long lastPostTime) {
         this.lastPostTime = lastPostTime;
     }
 }

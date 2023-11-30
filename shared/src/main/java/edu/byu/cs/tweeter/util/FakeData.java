@@ -209,16 +209,16 @@ public class FakeData {
         int index = 0;
         List<Status> fakeStatuses = getFakeStatuses();
 
-        if (lastStatus != null) {
-            for (int i = 0; i < fakeStatuses.size(); ++i) {
-                Status curStatus = fakeStatuses.get(i);
-                if (curStatus.getUser().getAlias().equals(lastStatus.getUser().getAlias()) &&
-                        curStatus.getTimestamp().equals(lastStatus.getTimestamp())) {
-                    index = i + 1;
-                    break;
-                }
-            }
-        }
+//        if (lastStatus != null) {
+//            for (int i = 0; i < fakeStatuses.size(); ++i) {
+//                Status curStatus = fakeStatuses.get(i);
+//                if (curStatus.getUser().getAlias().equals(lastStatus.getUser().getAlias()) &&
+//                        curStatus.getTimestamp().equals(lastStatus.getTimestamp())) {
+//                    index = i + 1;
+//                    break;
+//                }
+//            }
+//        }
 
         for (int count = 0; index < fakeStatuses.size() && count < limit; ++count, ++index) {
             Status curStatus = fakeStatuses.get(index);

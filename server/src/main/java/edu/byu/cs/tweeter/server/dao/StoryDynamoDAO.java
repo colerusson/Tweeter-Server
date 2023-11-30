@@ -67,7 +67,7 @@ public class StoryDynamoDAO implements StoryDAOInterface {
         if (lastStoryTime != 0) {
             Map<String, AttributeValue> startKey = new HashMap<>();
             startKey.put(PosterAttr, AttributeValue.builder().s(userAlias).build());
-            startKey.put(TimestampAttr, AttributeValue.builder().n(String.valueOf(lastStoryTime)).build());
+            startKey.put(TimestampAttr, AttributeValue.builder().n(Long.toString(lastStoryTime)).build());
 
             requestBuilder.exclusiveStartKey(startKey);
         }

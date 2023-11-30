@@ -27,13 +27,4 @@ public class DataPage<T> {
     public boolean isHasMorePages() {
         return hasMorePages;
     }
-
-    public T getLastEvaluatedKey() {
-        // return the last key in the list of values
-        if (values.size() > 0) {
-            return (T) values.get(values.size() - 1);
-        } else {
-            return null;
-        }
-    }
 }

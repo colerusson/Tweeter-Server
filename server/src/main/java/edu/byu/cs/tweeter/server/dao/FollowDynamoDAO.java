@@ -140,6 +140,7 @@ public class FollowDynamoDAO implements FollowDAOInterface {
 
     @Override
     public Pair<List<User>, Boolean> getFollowees(String followerAlias, int limit, String lastFolloweeAlias) {
+        // TODO: Fix the pagination
         DynamoDbTable<FollowBean> table = getClient().table(TableName, TableSchema.fromBean(FollowBean.class));
         Key key = Key.builder().partitionValue(followerAlias).build();
 
@@ -179,6 +180,7 @@ public class FollowDynamoDAO implements FollowDAOInterface {
 
     @Override
     public Pair<List<User>, Boolean> getFollowers(String followerAlias, int limit, String lastFollowerAlias) {
+        // TODO: Fix the pagination
         DynamoDbIndex<FollowBean> index = getClient().table(TableName, TableSchema.fromBean(FollowBean.class)).index(IndexName);
         Key key = Key.builder().partitionValue(followerAlias).build();
 

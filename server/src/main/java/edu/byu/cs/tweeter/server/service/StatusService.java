@@ -41,7 +41,7 @@ public class StatusService {
             return new StoryResponse("[Bad Request] Request needs to have a positive limit");
         }
 
-        Pair<List<Status>, Boolean> pair = storyDAO.getStory(request.getUserAlias(), request.getLimit(), request.getLastStoryTime());
+        Pair<List<Status>, Boolean> pair = storyDAO.getStory(request.getUserAlias(), request.getLimit(), request.getLastPostTime());
         return new StoryResponse(pair.getFirst(), pair.getSecond());
     }
 
