@@ -6,6 +6,7 @@ import com.amazonaws.services.lambda.runtime.events.SQSEvent;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 import com.amazonaws.services.sqs.model.SendMessageRequest;
+import com.amazonaws.services.sqs.model.SendMessageResult;
 
 import edu.byu.cs.tweeter.server.factory.DAOFactoryInterface;
 import edu.byu.cs.tweeter.server.factory.DynamoDAOFactory;
@@ -35,7 +36,10 @@ public class PostUpdateFeedMessagesHandler implements RequestHandler<SQSEvent, V
                 .withMessageBody(messageBody);
 
         AmazonSQS sqs = AmazonSQSClientBuilder.defaultClient();
-        sqs.sendMessage(send_msg_request);
+        SendMessageResult send_msg_result = sqs.sendMessage(send_msg_request);
+
+        String msgId = send_msg_result.getMessageId();
+        System.out.println("Message ID: " + msgId);
 
         return null;
     }

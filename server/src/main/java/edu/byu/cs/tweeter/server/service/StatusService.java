@@ -65,7 +65,7 @@ public class StatusService {
         Boolean result = storyDAO.postStatus(request.getUserAlias(), request.getPost(), request.getTimestamp());
         if (result) {
             // TODO: Send SQS message to post to feed
-            String messageBody = request.getUserAlias() + " BREAK " + request.getPost() + " BREAK " + request.getTimestamp();
+            String messageBody = "Change this message body as needed";
             String queueUrl = "https://sqs.us-west-2.amazonaws.com/379683941185/postStatusQueue";
 
             SendMessageRequest send_msg_request = new SendMessageRequest()
@@ -73,7 +73,10 @@ public class StatusService {
                     .withMessageBody(messageBody);
 
             AmazonSQS sqs = AmazonSQSClientBuilder.defaultClient();
-            sqs.sendMessage(send_msg_request);
+            SendMessageResult send_msg_result = sqs.sendMessage(send_msg_request);
+
+            String msgId = send_msg_result.getMessageId();
+            System.out.println("Message ID: " + msgId);
 
             return new PostStatusResponse(true);
         }
