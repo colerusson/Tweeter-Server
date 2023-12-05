@@ -18,8 +18,8 @@ import edu.byu.cs.tweeter.server.service.UserService;
 public class DataFillerHandler implements RequestHandler<Void, Void> {
     @Override
     public Void handleRequest(Void input, Context context) {
-        int numUsers = 50;
-        String followTarget = "@Passoff";
+        int numUsers = 150;
+        String followTarget = "@Jill";
 
         DAOFactoryInterface factory = new DynamoDAOFactory();
 
@@ -30,9 +30,9 @@ public class DataFillerHandler implements RequestHandler<Void, Void> {
         List<FollowBean> followers = new ArrayList<>();
 
         for (int i = 1; i <= numUsers; i++) {
-            String firstName = "First " + i;
-            String lastName = "Last " + i;
-            String alias = "@user" + i;
+            String firstName = "Guy " + i;
+            String lastName = "Girl " + i;
+            String alias = "@jillfollower" + i;
 
             UserBean user = new UserBean();
             user.setFirst_name(firstName);
