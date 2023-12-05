@@ -4,6 +4,7 @@ import java.util.List;
 
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.net.request.FeedRequest;
+import edu.byu.cs.tweeter.model.net.request.FollowersRequest;
 import edu.byu.cs.tweeter.model.net.request.PostStatusRequest;
 import edu.byu.cs.tweeter.model.net.request.StoryRequest;
 import edu.byu.cs.tweeter.model.net.response.FeedResponse;
@@ -13,6 +14,11 @@ import edu.byu.cs.tweeter.server.daoInterface.FeedDAOInterface;
 import edu.byu.cs.tweeter.server.daoInterface.StoryDAOInterface;
 import edu.byu.cs.tweeter.server.factory.DAOFactoryInterface;
 import edu.byu.cs.tweeter.util.Pair;
+
+import com.amazonaws.services.sqs.AmazonSQS;
+import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
+import com.amazonaws.services.sqs.model.SendMessageRequest;
+import com.amazonaws.services.sqs.model.SendMessageResult;
 
 public class StatusService {
     private final StoryDAOInterface storyDAO;
@@ -59,8 +65,23 @@ public class StatusService {
         Boolean result = storyDAO.postStatus(request.getUserAlias(), request.getPost(), request.getTimestamp());
         if (result) {
             // TODO: Send SQS message to post to feed
+            String messageBody = request.getUserAlias() + " BREAK " + request.getPost() + " BREAK " + request.getTimestamp();
+            String queueUrl = "https://sqs.us-west-2.amazonaws.com/379683941185/postStatusQueue";
+
+            SendMessageRequest send_msg_request = new SendMessageRequest()
+                    .withQueueUrl(queueUrl)
+                    .withMessageBody(messageBody);
+
+            AmazonSQS sqs = AmazonSQSClientBuilder.defaultClient();
+            sqs.sendMessage(send_msg_request);
+
             return new PostStatusResponse(true);
         }
         return new PostStatusResponse(false, "Could not post status");
+    }
+
+    public void postFeed() {
+        // TODO: Use SQS messages from PostUpdateFeedMessagesHandler to update the feed
+        // TODO: Call the feedDAO to update the feed
     }
 }
