@@ -14,12 +14,11 @@ import edu.byu.cs.tweeter.server.factory.DAOFactoryInterface;
 import edu.byu.cs.tweeter.server.factory.DynamoDAOFactory;
 import edu.byu.cs.tweeter.server.service.FollowService;
 import edu.byu.cs.tweeter.server.service.UserService;
-import edu.byu.cs.tweeter.util.Pair;
 
 public class DataFillerHandler implements RequestHandler<Void, Void> {
     @Override
     public Void handleRequest(Void input, Context context) {
-        int numUsers = 10;
+        int numUsers = 50;
         String followTarget = "@Passoff";
 
         DAOFactoryInterface factory = new DynamoDAOFactory();
