@@ -30,7 +30,13 @@ public class GetFollowersTask extends PagedTask<User> {
     protected Pair<List<User>, Boolean> getItems() {
         try {
             String targetUserAlias = getTargetUser() == null ? null : getTargetUser().getAlias();
-            String lastFollowerAlias = getLastItem() == null ? null : getLastItem().getAlias();
+            String lastFollowerAlias;
+
+            if (getLastItem() != null) {
+                lastFollowerAlias = getLastItem().getAlias();
+            } else {
+                lastFollowerAlias = null;
+            }
 
             if (targetUserAlias == null) {
                 return null;

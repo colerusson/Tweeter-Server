@@ -1,8 +1,11 @@
 package edu.byu.cs.tweeter.server.service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import edu.byu.cs.tweeter.model.domain.Status;
+import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.net.request.FeedRequest;
 import edu.byu.cs.tweeter.model.net.request.FollowersRequest;
 import edu.byu.cs.tweeter.model.net.request.PostStatusRequest;
@@ -17,8 +20,11 @@ import edu.byu.cs.tweeter.util.Pair;
 
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
+import com.amazonaws.services.sqs.model.AmazonSQSException;
 import com.amazonaws.services.sqs.model.SendMessageRequest;
 import com.amazonaws.services.sqs.model.SendMessageResult;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class StatusService {
     private final StoryDAOInterface storyDAO;
@@ -64,27 +70,34 @@ public class StatusService {
 
         Boolean result = storyDAO.postStatus(request.getUserAlias(), request.getPost(), request.getTimestamp());
         if (result) {
-            // TODO: Send SQS message to post to feed
-            String messageBody = "Change this message body as needed";
-            String queueUrl = "https://sqs.us-west-2.amazonaws.com/379683941185/postStatusQueue";
+            ObjectMapper objectMapper = new ObjectMapper();
+            Map<String, Object> messageMap = new HashMap<>();
+            messageMap.put("userAlias", request.getUserAlias());
+            messageMap.put("post", request.getPost());
+            messageMap.put("timestamp", request.getTimestamp());
 
-            SendMessageRequest send_msg_request = new SendMessageRequest()
-                    .withQueueUrl(queueUrl)
-                    .withMessageBody(messageBody);
+            try {
+                String messageBody = objectMapper.writeValueAsString(messageMap);
+                String queueUrl = "https://sqs.us-west-2.amazonaws.com/379683941185/postStatusQueue";
 
-            AmazonSQS sqs = AmazonSQSClientBuilder.defaultClient();
-            SendMessageResult send_msg_result = sqs.sendMessage(send_msg_request);
+                SendMessageRequest send_msg_request = new SendMessageRequest()
+                        .withQueueUrl(queueUrl)
+                        .withMessageBody(messageBody);
 
-            String msgId = send_msg_result.getMessageId();
-            System.out.println("Message ID: " + msgId);
+                AmazonSQS sqs = AmazonSQSClientBuilder.defaultClient();
+                sqs.sendMessage(send_msg_request);
 
-            return new PostStatusResponse(true);
+                return new PostStatusResponse(true);
+            } catch (JsonProcessingException e) {
+                return new PostStatusResponse(false, "Error creating JSON message: " + e.getMessage());
+            } catch (AmazonSQSException e) {
+                return new PostStatusResponse(false, "Error sending SQS message: " + e.getMessage());
+            }
         }
         return new PostStatusResponse(false, "Could not post status");
     }
 
-    public void postFeed() {
-        // TODO: Use SQS messages from PostUpdateFeedMessagesHandler to update the feed
-        // TODO: Call the feedDAO to update the feed
+    public void updateFeed(List<String> followers, String userAlias, String post, long timestamp) {
+        feedDAO.postStatus(followers, userAlias, post, timestamp);
     }
 }

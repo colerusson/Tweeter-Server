@@ -142,7 +142,6 @@ public class FollowDynamoDAO implements FollowDAOInterface {
 
     @Override
     public Pair<List<User>, Boolean> getFollowers(String followerAlias, int limit, String lastFolloweeAlias) {
-        // TODO: Fix the pagination
         DynamoDbTable<FollowBean> table = getClient().table(TableName, TableSchema.fromBean(FollowBean.class));
         Key key = Key.builder().partitionValue(followerAlias).build();
 
@@ -152,8 +151,8 @@ public class FollowDynamoDAO implements FollowDAOInterface {
 
         if (isNonEmptyString(lastFolloweeAlias)) {
             Map<String, AttributeValue> startKey = new HashMap<>();
-            startKey.put(FolloweeAttr, AttributeValue.builder().s(followerAlias).build());
-            startKey.put(FollowerAttr, AttributeValue.builder().n(lastFolloweeAlias).build());
+            startKey.put(FollowerAttr, AttributeValue.builder().s(followerAlias).build());
+            startKey.put(FolloweeAttr, AttributeValue.builder().s(lastFolloweeAlias).build());
 
             requestBuilder.exclusiveStartKey(startKey);
         }
@@ -181,8 +180,45 @@ public class FollowDynamoDAO implements FollowDAOInterface {
     }
 
     @Override
+    public List<String> getPagedFollowers(String userAlias, int limit, String lastFollowerAlias) {
+        DynamoDbTable<FollowBean> table = getClient().table(TableName, TableSchema.fromBean(FollowBean.class));
+        Key key = Key.builder().partitionValue(userAlias).build();
+
+        QueryEnhancedRequest.Builder requestBuilder = QueryEnhancedRequest.builder()
+                .queryConditional(QueryConditional.keyEqualTo(key))
+                .limit(limit);
+
+        if (isNonEmptyString(lastFollowerAlias)) {
+            Map<String, AttributeValue> startKey = new HashMap<>();
+            startKey.put(FollowerAttr, AttributeValue.builder().s(userAlias).build());
+            startKey.put(FolloweeAttr, AttributeValue.builder().s(lastFollowerAlias).build());
+
+            requestBuilder.exclusiveStartKey(startKey);
+        }
+
+        QueryEnhancedRequest request = requestBuilder.build();
+
+        List<String> result = new ArrayList<>();
+
+        PageIterable<FollowBean> pages = table.query(request);
+        try {
+            pages.stream()
+                    .limit(1)
+                    .forEach((Page<FollowBean> page) -> {
+                        page.items().forEach(followBean -> {
+                            String user = followBean.getFollowee_alias();
+                            result.add(user);
+                        });
+                    });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+
+    @Override
     public Pair<List<User>, Boolean> getFollowees(String followerAlias, int limit, String lastFollowerAlias) {
-        // TODO: Fix the pagination
         DynamoDbIndex<FollowBean> index = getClient().table(TableName, TableSchema.fromBean(FollowBean.class)).index(IndexName);
         Key key = Key.builder().partitionValue(followerAlias).build();
 
@@ -192,8 +228,8 @@ public class FollowDynamoDAO implements FollowDAOInterface {
 
         if (isNonEmptyString(lastFollowerAlias)) {
             Map<String, AttributeValue> startKey = new HashMap<>();
-            startKey.put(FollowerAttr, AttributeValue.builder().s(followerAlias).build());
-            startKey.put(FolloweeAttr, AttributeValue.builder().n(lastFollowerAlias).build());
+            startKey.put(FolloweeAttr, AttributeValue.builder().s(followerAlias).build());
+            startKey.put(FollowerAttr, AttributeValue.builder().s(lastFollowerAlias).build());
 
             requestBuilder.exclusiveStartKey(startKey);
         }
@@ -226,7 +262,6 @@ public class FollowDynamoDAO implements FollowDAOInterface {
     }
 
     private User convertToUser(FollowBean followBean, boolean isFollower) {
-        // TODO: Fix this to avoid talking to another DAO
         UserDynamoDAO userDAO = new UserDynamoDAO();
         if (isFollower) {
             return userDAO.getUser(followBean.getFollower_alias());

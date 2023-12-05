@@ -28,7 +28,13 @@ public class GetFollowingTask extends PagedTask<User> {
     protected Pair<List<User>, Boolean> getItems() throws IOException, TweeterRemoteException {
         try {
             String targetUserAlias = getTargetUser() == null ? null : getTargetUser().getAlias();
-            String lastFolloweeAlias = getLastItem() == null ? null : getLastItem().getAlias();
+            String lastFolloweeAlias;
+
+            if (getLastItem() != null) {
+                lastFolloweeAlias = getLastItem().getAlias();
+            } else {
+                lastFolloweeAlias = null;
+            }
 
             if (targetUserAlias == null) {
                 return null;

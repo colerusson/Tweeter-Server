@@ -45,10 +45,7 @@ public class FeedDynamoDAO implements FeedDAOInterface {
     }
 
     @Override
-    public Boolean postStatus(String userAlias, String post, long timestamp) {
-        FollowDynamoDAO followDAO = new FollowDynamoDAO();
-        List<String> followerAliases = followDAO.getAllFollowers(userAlias);
-
+    public void postStatus(List<String> followerAliases, String userAlias, String post, long timestamp) {
         if (followerAliases != null) {
             DynamoDbTable<FeedBean> feedTable = getClient().table(TableName, TableSchema.fromBean(FeedBean.class));
             for (String followerAlias : followerAliases) {
@@ -60,13 +57,10 @@ public class FeedDynamoDAO implements FeedDAOInterface {
                 feedTable.putItem(feedBean);
             }
         }
-
-        return true;
     }
 
     @Override
     public Pair<List<Status>, Boolean> getFeed(String userAlias, int limit, long lastFeedTime) {
-        // TODO: Sort this by timestamp from newest to oldest
         DynamoDbTable<FeedBean> table = getClient().table(TableName, TableSchema.fromBean(FeedBean.class));
         Key key = Key.builder().partitionValue(userAlias).build();
 
@@ -113,7 +107,6 @@ public class FeedDynamoDAO implements FeedDAOInterface {
     }
 
     private User getUser(String userAlias) {
-        // TODO: Fix this to avoid talking to another DAO
         UserDynamoDAO userDAO = new UserDynamoDAO();
         return userDAO.getUser(userAlias);
     }

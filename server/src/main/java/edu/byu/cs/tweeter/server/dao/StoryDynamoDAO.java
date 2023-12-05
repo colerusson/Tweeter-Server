@@ -56,7 +56,6 @@ public class StoryDynamoDAO implements StoryDAOInterface {
 
     @Override
     public Pair<List<Status>, Boolean> getStory(String userAlias, int limit, long lastStoryTime) {
-        // TODO: Sort this by timestamp from newest to oldest
         DynamoDbTable<StoryBean> table = getClient().table(TableName, TableSchema.fromBean(StoryBean.class));
         Key key = Key.builder().partitionValue(userAlias).build();
 
@@ -103,7 +102,6 @@ public class StoryDynamoDAO implements StoryDAOInterface {
     }
 
     private User getUser(String userAlias) {
-        // TODO: Fix this to avoid talking to another DAO
         UserDynamoDAO userDAO = new UserDynamoDAO();
         return userDAO.getUser(userAlias);
     }

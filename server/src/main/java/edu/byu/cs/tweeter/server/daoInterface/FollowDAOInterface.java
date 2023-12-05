@@ -15,4 +15,5 @@ public interface FollowDAOInterface {
     boolean follow(String followerAlias, String followeeAlias);
     boolean unfollow(String followerAlias, String followeeAlias);
     void addFollowersBatch(List<FollowBean> followers);
+    List<String> getPagedFollowers(String userAlias, int limit, String lastFollowerAlias);
 }

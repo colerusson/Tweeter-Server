@@ -52,6 +52,16 @@ public class FollowService {
         return new FollowersResponse(pair.getFirst(), pair.getSecond());
     }
 
+    public List<String> getPagedFollowers(String userAlias, int limit, String lastFollowerAlias) {
+        if (userAlias == null) {
+            return null;
+        } else if (limit <= 0) {
+            return null;
+        }
+
+        return followDAO.getPagedFollowers(userAlias, limit, lastFollowerAlias);
+    }
+
     public FollowingCountResponse getFollowingCount(FollowingCountRequest request) {
         if (request.getUserAlias() == null) {
             return new FollowingCountResponse("[Bad Request] Request needs to have a follower alias");

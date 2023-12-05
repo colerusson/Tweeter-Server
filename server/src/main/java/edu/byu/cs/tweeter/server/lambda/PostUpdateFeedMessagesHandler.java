@@ -6,15 +6,19 @@ import com.amazonaws.services.lambda.runtime.events.SQSEvent;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 import com.amazonaws.services.sqs.model.SendMessageRequest;
-import com.amazonaws.services.sqs.model.SendMessageResult;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import edu.byu.cs.tweeter.server.factory.DAOFactoryInterface;
 import edu.byu.cs.tweeter.server.factory.DynamoDAOFactory;
 import edu.byu.cs.tweeter.server.service.FollowService;
 
 public class PostUpdateFeedMessagesHandler implements RequestHandler<SQSEvent, Void> {
-    // TODO: Use Follow Service to get all the followers of the user and page them
-    // TODO: Use SQS to send messages to the UpdateFeedHandler for each page
 
     @Override
     public Void handleRequest(SQSEvent event, Context context) {
@@ -22,24 +26,52 @@ public class PostUpdateFeedMessagesHandler implements RequestHandler<SQSEvent, V
         FollowService followService = new FollowService(factory);
 
         for (SQSEvent.SQSMessage msg : event.getRecords()) {
-            System.out.println(msg.getBody());
+            String messageBody = msg.getBody();
+
+            try {
+                ObjectMapper objectMapper = new ObjectMapper();
+                JsonNode jsonNode = objectMapper.readTree(messageBody);
+
+                String userAlias = jsonNode.get("userAlias").asText();
+                String post = jsonNode.get("post").asText();
+                long timestamp = jsonNode.get("timestamp").asLong();
+
+                String lastFollowerAlias = null;
+                int batchSize = 100;
+
+                List<String> followers = followService.getPagedFollowers(userAlias, batchSize, null);
+                if (!followers.isEmpty()) {
+                    lastFollowerAlias = followers.get(followers.size() - 1);
+                }
+
+
+                while (!followers.isEmpty()) {
+                    Map<String, Object> messageMap = new HashMap<>();
+                    messageMap.put("userAlias", userAlias);
+                    messageMap.put("post", post);
+                    messageMap.put("timestamp", timestamp);
+                    messageMap.put("followers", followers);
+
+                    ObjectMapper newObjectMapper = new ObjectMapper();
+                    String newMessageBody = newObjectMapper.writeValueAsString(messageMap);
+
+                    String queueUrl = "https://sqs.us-west-2.amazonaws.com/379683941185/updateFeedQueue";
+                    SendMessageRequest send_msg_request = new SendMessageRequest()
+                            .withQueueUrl(queueUrl)
+                            .withMessageBody(newMessageBody);
+
+                    AmazonSQS sqs = AmazonSQSClientBuilder.defaultClient();
+                    sqs.sendMessage(send_msg_request);
+
+                    followers = followService.getPagedFollowers(userAlias, batchSize, lastFollowerAlias);
+                    if (!followers.isEmpty()) {
+                        lastFollowerAlias = followers.get(followers.size() - 1);
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-
-        // TODO: Populate a list of followers using the FollowService
-
-        // TODO: Send SQS messages to UpdateFeedHandler for each page
-        String messageBody = "Change This Message Body";
-        String queueUrl = "https://sqs.us-west-2.amazonaws.com/379683941185/updateFeedQueue";
-
-        SendMessageRequest send_msg_request = new SendMessageRequest()
-                .withQueueUrl(queueUrl)
-                .withMessageBody(messageBody);
-
-        AmazonSQS sqs = AmazonSQSClientBuilder.defaultClient();
-        SendMessageResult send_msg_result = sqs.sendMessage(send_msg_request);
-
-        String msgId = send_msg_result.getMessageId();
-        System.out.println("Message ID: " + msgId);
 
         return null;
     }
