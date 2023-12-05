@@ -46,6 +46,7 @@ public class StatusService {
     }
 
     public PostStatusResponse postStatus(PostStatusRequest request) {
+        // TODO: Change this to first post to story, then send an SQS and have a lambda function post to feed then return a response
         if (request == null) {
             return new PostStatusResponse(false, "[Bad Request] Request needs to have a status");
         } else if (request.getUserAlias() == null) {
@@ -59,6 +60,7 @@ public class StatusService {
         Boolean result = storyDAO.postStatus(request.getUserAlias(), request.getPost(), request.getTimestamp());
         if (result) {
             result = feedDAO.postStatus(request.getUserAlias(), request.getPost(), request.getTimestamp());
+            // TODO: Send SQS message to post to feed
             if (result) {
                 return new PostStatusResponse(true);
             } else {

@@ -47,7 +47,7 @@ public class FollowDynamoDAO implements FollowDAOInterface {
     }
 
     @Override
-    public int getFollowingCount(String userAlias) {
+    public int getFollowersCount(String userAlias) {
         DynamoDbTable<FollowBean> table = getClient().table(TableName, TableSchema.fromBean(FollowBean.class));
 
         QueryConditional queryConditional = QueryConditional.keyEqualTo(Key.builder().partitionValue(userAlias).build());
@@ -64,7 +64,7 @@ public class FollowDynamoDAO implements FollowDAOInterface {
     }
 
     @Override
-    public int getFollowersCount(String userAlias) {
+    public int getFollowingCount(String userAlias) {
         DynamoDbIndex<FollowBean> index = getClient().table(TableName, TableSchema.fromBean(FollowBean.class)).index(IndexName);
 
         QueryConditional queryConditional = QueryConditional.keyEqualTo(Key.builder().partitionValue(userAlias).build());
@@ -86,8 +86,8 @@ public class FollowDynamoDAO implements FollowDAOInterface {
         DynamoDbTable<FollowBean> table = getClient().table(TableName, TableSchema.fromBean(FollowBean.class));
 
         Key key = Key.builder()
-                .partitionValue(followerAlias)
-                .sortValue(followeeAlias)
+                .partitionValue(followeeAlias)
+                .sortValue(followerAlias)
                 .build();
 
         FollowBean follow = table.getItem(key);
@@ -100,8 +100,8 @@ public class FollowDynamoDAO implements FollowDAOInterface {
         DynamoDbTable<FollowBean> table = getClient().table(TableName, TableSchema.fromBean(FollowBean.class));
 
         FollowBean followBean = new FollowBean();
-        followBean.setFollower_alias(followerAlias);
-        followBean.setFollowee_alias(followeeAlias);
+        followBean.setFollower_alias(followeeAlias);
+        followBean.setFollowee_alias(followerAlias);
 
         table.putItem(followBean);
 
@@ -113,8 +113,8 @@ public class FollowDynamoDAO implements FollowDAOInterface {
         DynamoDbTable<FollowBean> table = getClient().table(TableName, TableSchema.fromBean(FollowBean.class));
 
         Key key = Key.builder()
-                .partitionValue(followerAlias)
-                .sortValue(followeeAlias)
+                .partitionValue(followeeAlias)
+                .sortValue(followerAlias)
                 .build();
 
         table.deleteItem(key);
@@ -139,7 +139,7 @@ public class FollowDynamoDAO implements FollowDAOInterface {
     }
 
     @Override
-    public Pair<List<User>, Boolean> getFollowees(String followerAlias, int limit, String lastFolloweeAlias) {
+    public Pair<List<User>, Boolean> getFollowers(String followerAlias, int limit, String lastFolloweeAlias) {
         // TODO: Fix the pagination
         DynamoDbTable<FollowBean> table = getClient().table(TableName, TableSchema.fromBean(FollowBean.class));
         Key key = Key.builder().partitionValue(followerAlias).build();
@@ -179,7 +179,7 @@ public class FollowDynamoDAO implements FollowDAOInterface {
     }
 
     @Override
-    public Pair<List<User>, Boolean> getFollowers(String followerAlias, int limit, String lastFollowerAlias) {
+    public Pair<List<User>, Boolean> getFollowees(String followerAlias, int limit, String lastFollowerAlias) {
         // TODO: Fix the pagination
         DynamoDbIndex<FollowBean> index = getClient().table(TableName, TableSchema.fromBean(FollowBean.class)).index(IndexName);
         Key key = Key.builder().partitionValue(followerAlias).build();
