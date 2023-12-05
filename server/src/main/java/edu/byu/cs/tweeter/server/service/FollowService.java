@@ -18,6 +18,7 @@ import edu.byu.cs.tweeter.model.net.response.FollowingCountResponse;
 import edu.byu.cs.tweeter.model.net.response.FollowingResponse;
 import edu.byu.cs.tweeter.model.net.response.IsFollowerResponse;
 import edu.byu.cs.tweeter.model.net.response.UnfollowResponse;
+import edu.byu.cs.tweeter.server.bean.FollowBean;
 import edu.byu.cs.tweeter.server.daoInterface.FollowDAOInterface;
 import edu.byu.cs.tweeter.server.factory.DAOFactoryInterface;
 import edu.byu.cs.tweeter.util.Pair;
@@ -103,6 +104,12 @@ public class FollowService {
             return new UnfollowResponse(true, "Unfollowed");
         } else {
             return new UnfollowResponse(false, "Failed to unfollow");
+        }
+    }
+
+    public void fillDatabase(List<FollowBean> followers) {
+        if (followers.size() > 0) {
+            followDAO.addFollowersBatch(followers);
         }
     }
 }

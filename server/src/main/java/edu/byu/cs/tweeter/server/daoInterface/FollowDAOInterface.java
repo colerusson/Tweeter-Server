@@ -3,6 +3,7 @@ package edu.byu.cs.tweeter.server.daoInterface;
 import java.util.List;
 
 import edu.byu.cs.tweeter.model.domain.User;
+import edu.byu.cs.tweeter.server.bean.FollowBean;
 import edu.byu.cs.tweeter.util.Pair;
 
 public interface FollowDAOInterface {
@@ -13,4 +14,5 @@ public interface FollowDAOInterface {
     boolean isFollower(String followerAlias, String followeeAlias);
     boolean follow(String followerAlias, String followeeAlias);
     boolean unfollow(String followerAlias, String followeeAlias);
+    void addFollowersBatch(List<FollowBean> followers);
 }
